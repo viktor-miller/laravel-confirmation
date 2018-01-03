@@ -10,8 +10,9 @@ use ViktorMiller\LaravelConfirmation\Repository\DatabaseTokenRepository;
 use ViktorMiller\LaravelConfirmation\Repository\TokenRepositoryInterface;
 
 /**
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class DatabaseRepositoryTest extends TestCase
 {

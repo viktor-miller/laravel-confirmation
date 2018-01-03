@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ViktorMiller\LaravelConfirmation\EmailBrokerInterface;
 use ViktorMiller\LaravelConfirmation\Notifications\Confirmation;
+
 /**
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class EmailBrokerTest extends TestCase
 {
