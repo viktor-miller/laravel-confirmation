@@ -1,0 +1,36 @@
+{
+    "name": "viktor-miller/laravel-confirmation",
+    "description": "laravel email confirmation package",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Viktor Miller",
+            "email": "phpfriq@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "illuminate/support": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ViktorMiller\\LaravelConfirmation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": { 
+            "ViktorMiller\\LaravelConfirmation\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ViktorMiller\\LaravelConfirmation\\Providers\\ServiceProvider"
+            ],
+            "aliases": {
+                "Email": "ViktorMiller\\LaravelConfirmation\\Facade\\Email"
+            }
+        }
+    }
+}
