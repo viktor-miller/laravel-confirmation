@@ -5,6 +5,11 @@ namespace {{namespace}}Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use ViktorMiller\LaravelConfirmation\Http\Controllers\Confirmation;
 
+/**
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
+ */
 class ConfirmationController extends Controller
 {
     use Confirmation;

@@ -5,8 +5,9 @@ namespace ViktorMiller\LaravelConfirmation;
 use ViktorMiller\LaravelConfirmation\Notifications\Confirmation as ConfirmationNotification;
 
 /**
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 trait ShouldConfirmEmail 
 {

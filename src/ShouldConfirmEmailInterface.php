@@ -3,8 +3,9 @@
 namespace ViktorMiller\LaravelConfirmation;
 
 /**
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 interface ShouldConfirmEmailInterface 
 {

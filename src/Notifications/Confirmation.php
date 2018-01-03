@@ -6,7 +6,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * @author Viktor Miller <v.miller@forty-four.de>
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class Confirmation extends Notification
 {

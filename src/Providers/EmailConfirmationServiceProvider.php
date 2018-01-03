@@ -6,8 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use ViktorMiller\LaravelConfirmation\EmailBrokerManager;
 
 /**
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class EmailConfirmationServiceProvider extends ServiceProvider 
 {   

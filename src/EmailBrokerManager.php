@@ -7,9 +7,9 @@ use InvalidArgumentException;
 use ViktorMiller\LaravelConfirmation\Repository\DatabaseTokenRepository;
 
 /**
- * Description of EmailBrokerManager
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class EmailBrokerManager
 {

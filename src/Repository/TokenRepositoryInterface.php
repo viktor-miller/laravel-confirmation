@@ -5,8 +5,9 @@ namespace ViktorMiller\LaravelConfirmation\Repository;
 use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
 
 /**
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 interface TokenRepositoryInterface 
 {

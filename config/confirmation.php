@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
+ */
+
 return [
     'defaults' => [
         'emails' => 'users'

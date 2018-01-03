@@ -5,6 +5,11 @@ namespace ViktorMiller\LaravelConfirmation\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\DetectsApplicationNamespace;
 
+/**
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
+ */
 class Confirmation extends Command
 {
     use DetectsApplicationNamespace;

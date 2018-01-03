@@ -8,9 +8,9 @@ use Illuminate\Contracts\Auth\UserProvider;
 use ViktorMiller\LaravelConfirmation\Repository\TokenRepositoryInterface;
 
 /**
- * Description of EmailBroker
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class EmailBroker implements EmailBrokerInterface
 {

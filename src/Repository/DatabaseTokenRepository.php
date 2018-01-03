@@ -9,9 +9,9 @@ use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
 
 /**
- * Description of DatabaseTokenRepository
- *
- * @author viktormiller
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class DatabaseTokenRepository implements TokenRepositoryInterface 
 {

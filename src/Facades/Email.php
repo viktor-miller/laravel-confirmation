@@ -5,7 +5,9 @@ namespace ViktorMiller\LaravelConfirmation\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @author Viktor Miller <v.miller@forty-four.de>
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class Email extends Facade
 {
