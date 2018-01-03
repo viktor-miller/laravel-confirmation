@@ -1,4 +1,5 @@
 
+// Confirmation
 Route::get('/confirmation', 'Auth\ConfirmationController@index');
 Route::post('/confirmation', 'Auth\ConfirmationController@send');
 Route::get('/confirmation/{token}', 'Auth\ConfirmationController@confirm')->name('confirmation');

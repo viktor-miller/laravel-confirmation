@@ -20,8 +20,11 @@ class Confirmation extends Command
      * @var string
      */
     protected $signature = 'confirmation
-                    {--views : Only scaffold the confirmation views}
-                    {--force : Overwrite existing views by default}';
+                    {--views            : Only scaffold the confirmation views}
+                    {--controllers      : Only scaffold the confirmation controllers}
+                    {--notifications    : Only scaffold the confirmation notifications}
+                    {--routes           : Only scaffold the confirmation routes}
+                    {--force            : Overwrite existing views by default}';
     
     /**
      * The console command description.
@@ -47,20 +50,20 @@ class Confirmation extends Command
     public function handle()
     {
         $this->createDirectories();
-
-        $this->exportViews();
-
-        if (! $this->option('views')) {
-            file_put_contents(
-                app_path('Http/Controllers/Auth/ConfirmationController.php'),
-                $this->compileControllerStub()
-            );
-
-            file_put_contents(
-                base_path('routes/web.php'),
-                file_get_contents(__DIR__. '/../stubs/make/routes.stub'),
-                FILE_APPEND
-            );
+        
+        if ($this->option('notifications')) {
+            $this->exportNotifications();
+        } elseif ($this->option('controllers')) {
+            $this->exportControllers();
+        } elseif ($this->option('views')) {
+            $this->exportViews();
+        } elseif ($this->option('routes')) {
+            $this->exportRoutes();
+        } else {
+            $this->exportViews();
+            $this->exportControllers();
+            $this->exportNotifications();
+            $this->exportRoutes();
         }
 
         $this->info('Confirmation scaffolding generated successfully.');
@@ -74,6 +77,10 @@ class Confirmation extends Command
     protected function createDirectories()
     {
         if (! is_dir($directory = resource_path('views/auth'))) {
+            mkdir($directory, 0755, true);
+        }
+        
+        if (! is_dir($directory = app_path('Notifications/Auth'))) {
             mkdir($directory, 0755, true);
         }
     }
@@ -99,6 +106,58 @@ class Confirmation extends Command
         }
     }
     
+    protected function exportControllers()
+    {
+        $path = 'Http/Controllers/Auth/ConfirmationController.php';
+        
+        if (file_exists($file = app_path($path)) && ! $this->option('force')) {
+            if (! $this->confirm("The [{$path}] Controller already exists. Do you want to replace it?")) {
+                return;
+            }
+        }
+            
+        file_put_contents(
+            $file,
+            $this->compileControllerStub()
+        );
+    }
+    
+    protected function exportNotifications()
+    {
+        $path = 'Notifications/Confirmation.php';
+        
+        if (file_exists($file = app_path($path)) && ! $this->option('force')) {
+            if (! $this->confirm("The [{$path}] Notification already exists. Do you want to replace it?")) {
+                return;
+            }
+        }
+            
+        file_put_contents(
+            $file,
+            $this->compileNotificationStub()
+        );
+    }
+    
+    protected function exportRoutes()
+    {
+        $path = 'routes/web.php';
+        
+        if (file_exists($file = base_path($path)) && 
+            ! $this->option('force') && 
+              strpos(file_get_contents(base_path($path)), 'confirmation') !== FALSE
+        ) {
+            if (! $this->confirm("The file [{$path}] already contains confirmation config. Do you want to replace it?")) {
+                return;
+            }
+        }
+        
+        file_put_contents(
+            $file,
+            file_get_contents(__DIR__ .'/../stubs/make/routes.stub'),
+            FILE_APPEND
+        );
+    }
+    
     /**
      * Compiles the HomeController stub.
      *
@@ -110,6 +169,20 @@ class Confirmation extends Command
             '{{namespace}}',
             $this->getAppNamespace(),
             file_get_contents(__DIR__ .'/../stubs/make/controllers/ConfirmationController.stub')
+        );
+    }
+    
+    /**
+     * Compiles the ConfirmationNotification stub.
+     * 
+     * @return string
+     */
+    protected function compileNotificationStub()
+    {
+        return str_replace(
+            '{{namespace}}',
+            $this->getAppNamespace(),
+            file_get_contents(__DIR__ .'/../stubs/make/notifications/Confirmation.stub')
         );
     }
 }

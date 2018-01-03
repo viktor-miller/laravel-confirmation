@@ -2,7 +2,7 @@
 
 namespace ViktorMiller\LaravelConfirmation;
 
-use ViktorMiller\LaravelConfirmation\Notifications\Confirmation as ConfirmationNotification;
+use App\Notifications\Auth\Confirmation as ConfirmationNotification;
 
 /**
  * 
