@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}Notifications;
+namespace {{namespace}}Notifications\Auth;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -49,10 +49,11 @@ class Confirmation extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->line('You have just registered successfully.')
-            ->line('Please confirm your e-mail address.')
-            ->action('Verify', url(
-                config('app.url').route('confirmation', $this->token, false)
+            ->subject(trans('Email Verification'))
+            ->line(trans('You have successfully registered.'))
+            ->line(trans('You must verify your email before you can access the site. To validate your email click on the button below'))
+            ->action('Email verification', url(
+                config('app.url').route('email-confirmation::confirmation', $this->token, false)
             ));
     }
 }

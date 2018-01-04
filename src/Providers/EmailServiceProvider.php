@@ -2,15 +2,15 @@
 
 namespace ViktorMiller\LaravelConfirmation\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use ViktorMiller\LaravelConfirmation\EmailBrokerManager;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class EmailConfirmationServiceProvider extends ServiceProvider 
+class EmailServiceProvider extends BaseServiceProvider 
 {   
     /**
      * Indicates if loading of the provider is deferred.

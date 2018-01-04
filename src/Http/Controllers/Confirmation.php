@@ -4,6 +4,7 @@ namespace ViktorMiller\LaravelConfirmation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ViktorMiller\LaravelConfirmation\Facades\Email;
+use ViktorMiller\LaravelConfirmation\EmailBrokerInterface;
 use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
 
 /**
@@ -14,14 +15,11 @@ use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
 trait Confirmation
 {
     /**
+     * Route name holder to redirect response
+     * 
      * @var string
      */
-    protected $redirectTo = '/confirmation';
-    
-    /**
-     * @var string
-     */
-    protected $loginUrl = '/login';
+    protected $redirectTo = 'confirmation::form';
     
     /**
      * 
@@ -29,7 +27,7 @@ trait Confirmation
      */
     public function index()
     {
-        return view('auth.confirmation');
+        return view('confirmation::index');
     }
     
     /**
@@ -42,7 +40,7 @@ trait Confirmation
         
         $response = $this->broker()->send($this->credentials($request));
         
-        return $response == Email::CONFIRM_LINK_SENT
+        return $response == EmailBrokerInterface::CONFIRM_LINK_SENT
                 ? $this->sendSendedResponse($response)
                 : $this->sendNotSendedResponse($response);
     }
@@ -75,7 +73,9 @@ trait Confirmation
      */
     protected function sendSendedResponse($response)
     {
-        return redirect($this->redirectTo)->with('success', trans($response));
+        return redirect()
+                ->route($this->redirectTo)
+                ->with('success', trans($response));
     }
     
     /**
@@ -85,7 +85,9 @@ trait Confirmation
      */
     protected function sendNotSendedResponse($response)
     {
-        return redirect($this->redirectTo)->with('error', trans($response));
+        return redirect()
+                ->route($this->redirectTo)
+                ->with('error', trans($response));
     }
     
     /**
@@ -101,7 +103,7 @@ trait Confirmation
             }
         );
         
-        return $response == Email::EMAIL_CONFIRMED
+        return $response == EmailBrokerInterface::EMAIL_CONFIRMED
                 ? $this->sendConfirmedResponse($response)
                 : $this->sendNotConfirmedResponse($response);
     }
@@ -123,7 +125,9 @@ trait Confirmation
      */
     protected function sendConfirmedResponse($response)
     {
-        return redirect($this->loginUrl)->with('success', trans($response));
+        return redirect()
+                ->route($this->redirectTo)
+                ->with('success', trans($response));
     }
     
     /**
@@ -133,7 +137,9 @@ trait Confirmation
      */
     protected function sendNotConfirmedResponse($response)
     {
-        return redirect($this->redirectTo)->with('error', trans($response));
+        return redirect()
+                ->route($this->redirectTo)
+                ->with('error', trans($response));
     }
     
     /**

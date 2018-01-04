@@ -20,7 +20,6 @@ class Confirmation extends Command
      * @var string
      */
     protected $signature = 'confirmation
-                    {--views            : Only scaffold the confirmation views}
                     {--controllers      : Only scaffold the confirmation controllers}
                     {--notifications    : Only scaffold the confirmation notifications}
                     {--routes           : Only scaffold the confirmation routes}
@@ -31,15 +30,33 @@ class Confirmation extends Command
      *
      * @var string
      */
-    protected $description = 'Scaffold basic confirmation views and routes';
+    protected $description = 'Scaffold basic confirmation files';
     
     /**
-     * The views that need to be exported.
-     *
+     * The controllers that need to be exported.
+     * 
      * @var array
      */
-    protected $views = [
-        'auth/confirmation.stub' => 'auth/confirmation.blade.php'
+    protected $controllers = [
+        'auth/ConfirmationController.stub' => 'Http/Controllers/Auth/ConfirmationController.php'
+    ];
+    
+    /**
+     * The notifications that need to be exported.
+     * 
+     * @var array
+     */
+    protected $notifications = [
+        'Confirmation.stub' => 'Notifications/Auth/Confirmation.php'
+    ];
+    
+    /**
+     * The routes that need to be exported.
+     * 
+     * @var array
+     */
+    protected $routes = [
+        'web.stub' => 'routes/web.php'
     ];
     
     /**
@@ -49,18 +66,13 @@ class Confirmation extends Command
      */
     public function handle()
     {
-        $this->createDirectories();
-        
         if ($this->option('notifications')) {
             $this->exportNotifications();
         } elseif ($this->option('controllers')) {
             $this->exportControllers();
-        } elseif ($this->option('views')) {
-            $this->exportViews();
         } elseif ($this->option('routes')) {
             $this->exportRoutes();
         } else {
-            $this->exportViews();
             $this->exportControllers();
             $this->exportNotifications();
             $this->exportRoutes();
@@ -70,119 +82,109 @@ class Confirmation extends Command
     }
     
     /**
-     * Create the directories for the files.
-     *
+     * Export the confirmation controllers
+     * 
      * @return void
      */
-    protected function createDirectories()
+    protected function exportControllers()
     {
-        if (! is_dir($directory = resource_path('views/auth'))) {
-            mkdir($directory, 0755, true);
-        }
-        
-        if (! is_dir($directory = app_path('Notifications/Auth'))) {
-            mkdir($directory, 0755, true);
-        }
-    }
-    
-    /**
-     * Export the authentication views.
-     *
-     * @return void
-     */
-    protected function exportViews()
-    {
-        foreach ($this->views as $key => $value) {
-            if (file_exists($view = resource_path('views/'. $value)) && ! $this->option('force')) {
-                if (! $this->confirm("The [{$value}] view already exists. Do you want to replace it?")) {
+        foreach ($this->controllers as $stub => $dest) {
+            if (file_exists($controller = app_path($dest)) && ! $this->option('force')) {
+                if (! $this->confirm("The [{$dest}] controller already exists. Do you want to replace it?")) {
                     continue;
                 }
             }
-
-            copy(
-                __DIR__.'/../stubs/make/views/'. $key,
-                $view
+            
+            if (! is_dir(dirname($controller))) {
+                mkdir(dirname($controller), 0755, true);
+            }
+            
+            file_put_contents(
+                $controller,
+                $this->compileControllerStub($stub)
             );
         }
     }
     
-    protected function exportControllers()
-    {
-        $path = 'Http/Controllers/Auth/ConfirmationController.php';
-        
-        if (file_exists($file = app_path($path)) && ! $this->option('force')) {
-            if (! $this->confirm("The [{$path}] Controller already exists. Do you want to replace it?")) {
-                return;
-            }
-        }
-            
-        file_put_contents(
-            $file,
-            $this->compileControllerStub()
-        );
-    }
-    
+    /**
+     * Export the confirmation notifications
+     * 
+     * @return void
+     */
     protected function exportNotifications()
     {
-        $path = 'Notifications/Confirmation.php';
-        
-        if (file_exists($file = app_path($path)) && ! $this->option('force')) {
-            if (! $this->confirm("The [{$path}] Notification already exists. Do you want to replace it?")) {
-                return;
+        foreach ($this->notifications as $stub => $dest) {
+            if (file_exists($notification = app_path($dest)) && ! $this->option('force')) {
+                if (! $this->confirm("The [{$dest}] notification already exists. Do you want to replace it?")) {
+                    continue;
+                }
             }
-        }
             
-        file_put_contents(
-            $file,
-            $this->compileNotificationStub()
-        );
-    }
-    
-    protected function exportRoutes()
-    {
-        $path = 'routes/web.php';
-        
-        if (file_exists($file = base_path($path)) && 
-            ! $this->option('force') && 
-              strpos(file_get_contents(base_path($path)), 'confirmation') !== FALSE
-        ) {
-            if (! $this->confirm("The file [{$path}] already contains confirmation config. Do you want to replace it?")) {
-                return;
+            if (! is_dir(dirname($notification))) {
+                mkdir(dirname($notification), 0755, true);
             }
+            
+            file_put_contents(
+                $notification,
+                $this->compileNotificationStub($stub)
+            );
         }
-        
-        file_put_contents(
-            $file,
-            file_get_contents(__DIR__ .'/../stubs/make/routes.stub'),
-            FILE_APPEND
-        );
     }
     
     /**
-     * Compiles the HomeController stub.
+     * Export the confirmation routes
+     * 
+     * @return void
+     */
+    protected function exportRoutes()
+    {
+        foreach ($this->routes as $stub => $dest) {
+            if (file_exists($route = base_path($dest)) && 
+                ! $this->option('force') && 
+                strpos(file_get_contents(base_path($dest)), 'confirmation') !== FALSE
+            ) {
+                if (! $this->confirm("The file [{$dest}] already contains confirmation routes. Do you want to replace it?")) {
+                    return;
+                }
+            }
+            
+            if (! is_dir(dirname($route))) {
+                mkdir(dirname($route), 0755, true);
+            }
+            
+            file_put_contents(
+                $route,
+                file_get_contents(__DIR__ .'/../stubs/make/routes/'. $stub),
+                FILE_APPEND
+            );
+        }
+    }
+    
+    /**
+     * Compiles the controllers.
      *
      * @return string
      */
-    protected function compileControllerStub()
+    protected function compileControllerStub($stub)
     {
         return str_replace(
             '{{namespace}}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__ .'/../stubs/make/controllers/ConfirmationController.stub')
+            file_get_contents(__DIR__ .'/../stubs/make/controllers/'. $stub)
         );
     }
     
     /**
-     * Compiles the ConfirmationNotification stub.
+     * Compiles the notification stub.
      * 
      * @return string
      */
-    protected function compileNotificationStub()
+    protected function compileNotificationStub($stub)
     {
         return str_replace(
             '{{namespace}}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__ .'/../stubs/make/notifications/Confirmation.stub')
+            file_get_contents(__DIR__ .'/../stubs/make/notifications/'. $stub)
         );
     }
 }

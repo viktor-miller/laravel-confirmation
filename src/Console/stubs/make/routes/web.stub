@@ -1,0 +1,5 @@
+
+// Confirmation
+Route::get('/email/confirmation', 'Auth\ConfirmationController@index')->name('confirmation::form');
+Route::post('/email/confirmation', 'Auth\ConfirmationController@send')->name('confirmation::send');
+Route::get('/email/confirmation/{token}', 'Auth\ConfirmationController@confirm')->name('confirmation::confirmation');
