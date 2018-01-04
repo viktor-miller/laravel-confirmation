@@ -1,4 +1,4 @@
-#Laravel Email Confirmation
+##Laravel Email Confirmation
 
 This package is to add email confirmation to Laravel 5.4/5.5 project.
 
