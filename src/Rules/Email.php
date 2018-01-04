@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Auth as AuthFacade;
 use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
 
 /**
- * @author Viktor Miller <v.miller@forty-four.de>
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class Email
 {

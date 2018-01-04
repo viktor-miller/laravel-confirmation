@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails as BeseSendsPasswordResetEmails;
 
 /**
- * @author Viktor Miller <v.miller@forty-four.de>
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 trait SendsPasswordResetEmails
 {

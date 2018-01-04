@@ -67,7 +67,7 @@ class DatabaseRepositoryTest extends TestCase
         $token = $this->repository->create($this->user);
         
         $this->assertInstanceOf(StdClass::class, 
-                $this->repository->retriveByToken($token));
+        $this->repository->retriveByToken($token));
     }
     
     /**
@@ -78,7 +78,7 @@ class DatabaseRepositoryTest extends TestCase
         $this->repository->create($this->user);
         
         $this->assertInstanceOf(StdClass::class, 
-                $this->repository->retriveByUser($this->user));
+        $this->repository->retriveByUser($this->user));
     }
     
     /**
