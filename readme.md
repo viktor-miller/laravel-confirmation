@@ -1,10 +1,10 @@
-##Laravel Email Confirmation
+## Laravel Email Confirmation ##
 
 This package is to add email confirmation to Laravel 5.4/5.5 project.
 
 The package add a listener to event **Illuminate\Auth\Events\Registered**. When this event is fired then a record with unique token will be created and a notification with confirmation link will be sent. After click on verification link will user be confirmed and his token record will be deleted.
 
-###Features
+### Features ###
 - create a migration to add "confirmed" column to users table
 - create a migration to create "email_confirmations" table
 - scaffold for controller, routes and notification
@@ -15,7 +15,7 @@ The package add a listener to event **Illuminate\Auth\Events\Registered**. When 
 - form to resend notification with confirmation link
 
 
-###Installation
+### Installation ###
 
 Add package to your **composer.json** file:
 
@@ -83,7 +83,7 @@ Run artisan confirmation command
 	
 	php artisan confirmation
 
-###Publish
+### Publish ###
 
 If you want to do some changes or add a language you can publish translations
 
@@ -97,12 +97,12 @@ if you want to do some changes on config you can publish config
 
 	php artisan vendor:publish --tag=confirmation:config
 	
-###Console
+### Console ###
 supported options
 
 	php artisan confirmation -h
 	
-###Validation
+### Validation ###
 If you want to set pause for confirmation validation override **validateLogin** method in **App\Http\Controller\Auth\LoginController** and **validateEmail** in **App\Http\Controller\Auth\ForgotPasswordController**.
 
 For expample 24 Hours
