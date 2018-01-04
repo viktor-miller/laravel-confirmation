@@ -4,6 +4,7 @@ namespace ViktorMiller\LaravelConfirmation\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Validator;
 use ViktorMiller\LaravelConfirmation\Facades\Email;
 use ViktorMiller\LaravelConfirmation\Console\Commands;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -45,13 +46,13 @@ class ServiceProvider extends BaseServiceProvider
         // Configuration
         $this->publishes([
             $this->root .'config/confirmation.php' => config_path('confirmation.php'),
-        ]);
+        ], 'confirmation:config');
         
         // Translations
         $this->loadTranslationsFrom($this->root .'resources/lang', 'confirmation');
         $this->publishes([
             $this->root .'resources/lang' => resource_path('lang/vendor/confirmation'),
-        ]);
+        ], 'confirmation:translations');
         
         // Migration
         $this->loadMigrationsFrom($this->root . 'database/migrations');
@@ -61,10 +62,12 @@ class ServiceProvider extends BaseServiceProvider
         
         $this->publishes([
             $this->root .'/resources/views' => resource_path('views/vendor/confirmation'),
-        ]);
+        ], 'confirmation:views');
         
         $this->initEventListeners();
         $this->initConsoleCommands();
+        
+        Validator::extend('email_confirmed', 'ViktorMiller\LaravelConfirmation\Rules\Email@confirmed');
     }
 
     /**

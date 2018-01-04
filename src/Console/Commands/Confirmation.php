@@ -19,7 +19,7 @@ class Confirmation extends Command
      *
      * @var string
      */
-    protected $signature = 'confirmation
+    protected $signature = 'confirmation 
                     {--controllers      : Only scaffold the confirmation controllers}
                     {--notifications    : Only scaffold the confirmation notifications}
                     {--routes           : Only scaffold the confirmation routes}

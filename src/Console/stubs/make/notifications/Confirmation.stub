@@ -53,7 +53,7 @@ class Confirmation extends Notification
             ->line(trans('You have successfully registered.'))
             ->line(trans('You must verify your email before you can access the site. To validate your email click on the button below'))
             ->action('Email verification', url(
-                config('app.url').route('email-confirmation::confirmation', $this->token, false)
+                config('app.url').route('confirmation::confirmation', $this->token, false)
             ));
     }
 }
