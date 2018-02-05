@@ -31,7 +31,7 @@ class Confirmation extends Command
      *
      * @var string
      */
-    protected $description = 'Scaffold basic confirmation views and routes';
+    protected $description = 'Scaffold basic confirmation views, routes and controllers';
     
     /**
      * The views that need to be exported.
@@ -39,7 +39,41 @@ class Confirmation extends Command
      * @var array
      */
     protected $views = [
-        'auth/confirmation.stub' => 'auth/confirmation.blade.php'
+        __DIR__ .'/../stubs/make/views/send.stub' => 
+            'resources/views/auth/emails/send.blade.php',
+        __DIR__ .'/../stubs/make/views/confirm.stub' => 
+            'resources/views/auth/emails/confirm.blade.php'
+    ];
+    
+    /**
+     * The controllers that need to be exported
+     * 
+     * @var array
+     */
+    protected $controllers = [
+        __DIR__ .'/../stubs/make/controllers/SendEmailConfirmationController.stub' => 
+            'App/Http/Controllers/Auth/SendEmailConfirmationController.php',
+        __DIR__ .'/../stubs/make/controllers/ConfirmEmailController.stub' => 
+            'App/Http/Controllers/Auth/ConfirmEmailController.php'
+    ];
+    
+    /**
+     * The notifications that need to be exported
+     * 
+     * @var array
+     */
+    protected $notifications = [
+        __DIR__ .'/../stubs/make/notifications/Confirmation.stub' => 
+            'App/Notifications/Auth/Confirmation.php'
+    ];
+    
+    /**
+     * The routes that need to be exported
+     * 
+     * @var array 
+     */
+    protected $routes = [
+        __DIR__ .'/../stubs/make/routes.stub' => 'routes/web.php'
     ];
     
     /**
@@ -76,113 +110,133 @@ class Confirmation extends Command
      */
     protected function createDirectories()
     {
-        if (! is_dir($directory = resource_path('views/auth'))) {
-            mkdir($directory, 0755, true);
-        }
-        
-        if (! is_dir($directory = app_path('Notifications/Auth'))) {
-            mkdir($directory, 0755, true);
+        $this->checkDirs($this->views);
+        $this->checkDirs($this->controllers);
+        $this->checkDirs($this->notifications);
+        $this->checkDirs($this->routes);
+    }
+    
+    /**
+     * Check dirs
+     * 
+     * @param array $arr
+     */
+    protected function checkDirs(array $arr)
+    {
+        foreach ($arr as $file) {
+            $this->makeDirIfNotExists(base_path($file));
         }
     }
     
     /**
-     * Export the authentication views.
+     * Make a new dir if not exists
+     * 
+     * @param string $path
+     */
+    protected function makeDirIfNotExists($path)
+    {
+        $dir = dirname($path);
+        
+        if (! is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+    }
+    
+    /**
+     * Export the confirmation views.
      *
      * @return void
      */
     protected function exportViews()
     {
-        foreach ($this->views as $key => $value) {
-            if (file_exists($view = resource_path('views/'. $value)) && ! $this->option('force')) {
-                if (! $this->confirm("The [{$value}] view already exists. Do you want to replace it?")) {
+        foreach ($this->views as $stub => $dist) {
+            $path = base_path($dist);
+            
+            if (file_exists($path) && ! $this->option('force')) {
+                if (! $this->confirm("The [{$path}] view already exists. Do you want to replace it?")) {
                     continue;
                 }
             }
 
-            copy(
-                __DIR__.'/../stubs/make/views/'. $key,
-                $view
-            );
+            copy($stub, $path);
         }
-    }
-    
-    protected function exportControllers()
-    {
-        $path = 'Http/Controllers/Auth/ConfirmationController.php';
-        
-        if (file_exists($file = app_path($path)) && ! $this->option('force')) {
-            if (! $this->confirm("The [{$path}] Controller already exists. Do you want to replace it?")) {
-                return;
-            }
-        }
-            
-        file_put_contents(
-            $file,
-            $this->compileControllerStub()
-        );
-    }
-    
-    protected function exportNotifications()
-    {
-        $path = 'Notifications/Confirmation.php';
-        
-        if (file_exists($file = app_path($path)) && ! $this->option('force')) {
-            if (! $this->confirm("The [{$path}] Notification already exists. Do you want to replace it?")) {
-                return;
-            }
-        }
-            
-        file_put_contents(
-            $file,
-            $this->compileNotificationStub()
-        );
-    }
-    
-    protected function exportRoutes()
-    {
-        $path = 'routes/web.php';
-        
-        if (file_exists($file = base_path($path)) && 
-            ! $this->option('force') && 
-              strpos(file_get_contents(base_path($path)), 'confirmation') !== FALSE
-        ) {
-            if (! $this->confirm("The file [{$path}] already contains confirmation config. Do you want to replace it?")) {
-                return;
-            }
-        }
-        
-        file_put_contents(
-            $file,
-            file_get_contents(__DIR__ .'/../stubs/make/routes.stub'),
-            FILE_APPEND
-        );
     }
     
     /**
-     * Compiles the HomeController stub.
+     * Export the confirmation controllers
+     * 
+     * @return void
+     */
+    protected function exportControllers()
+    {   
+        foreach ($this->controllers as $stub => $dist) {
+            $path = base_path($dist);
+            
+            if (file_exists($path) && ! $this->option('force')) {
+                if (! $this->confirm("The [{$path}] controller already exists. Do you want to replace it?")) {
+                    continue;
+                }
+            }
+            
+            file_put_contents($path, $this->compileStub($stub));
+        }
+    }
+    
+    /**
+     * Export the notifications notifications
+     * 
+     * @return void
+     */
+    protected function exportNotifications()
+    {
+        foreach ($this->notifications as $stub => $dist) {
+            $path = base_path($dist);
+        
+            if (file_exists($path) && ! $this->option('force')) {
+                if (! $this->confirm("The [{$path}] Notification already exists. Do you want to replace it?")) {
+                    return;
+                }
+            }
+            
+            file_put_contents($path, $this->compileStub($stub));
+        }
+    }
+    
+    /**
+     * Export confirmation routes
+     * 
+     * @return void 
+     */
+    protected function exportRoutes()
+    {
+        foreach ($this->routes as $stub => $dist) {
+            $path = base_path($dist);
+            $content = file_get_contents($stub);
+            
+            if (! $this->option('force') && 
+                strpos(file_get_contents($path), $content) !== false) {
+                if (! $this->confirm("The file [{$path}] already contains confirmation route. Do you want to replace it?")) {
+                    continue;
+                }
+                
+                file_put_contents(
+                    $path, str_replace($content, '', file_get_contents($path))
+                );
+            }
+            
+            file_put_contents($path, $content, FILE_APPEND);
+        }
+    }
+    
+    /**
+     * Compile stub.
      *
      * @return string
      */
-    protected function compileControllerStub()
+    protected function compileStub($stub)
     {
-        return str_replace(
-            '{{namespace}}',
-            $this->getAppNamespace(),
-            file_get_contents(__DIR__ .'/../stubs/make/controllers/ConfirmationController.stub')
-        );
-    }
-    
-    /**
-     * Compiles the ConfirmationNotification stub.
-     * 
-     * @return string
-     */
-    protected function compileNotificationStub()
-    {
-        return str_replace(
-            '{{namespace}}',
-            $this->getAppNamespace(),
-            file_get_contents(__DIR__ .'/../stubs/make/notifications/Confirmation.stub')
+        return str_replace('{{namespace}}', $this->getAppNamespace(),
+            file_get_contents($stub)
         );
     }
 }

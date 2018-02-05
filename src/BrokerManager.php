@@ -4,14 +4,16 @@ namespace ViktorMiller\LaravelConfirmation;
 
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Illuminate\Foundation\Application;
 use ViktorMiller\LaravelConfirmation\Repository\DatabaseTokenRepository;
+use ViktorMiller\LaravelConfirmation\Contracts\BrokerManager as BrokerManagerContract;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class EmailBrokerManager
+class BrokerManager implements BrokerManagerContract
 {
     /**
      * The application instance.
@@ -33,7 +35,7 @@ class EmailBrokerManager
      * @param  \Illuminate\Foundation\Application $app
      * @return void
      */
-    public function __construct($app)
+    public function __construct(Application $app)
     {
         $this->app = $app;
     }
@@ -64,14 +66,20 @@ class EmailBrokerManager
     protected function resolve($name)
     {
         $config = $this->getConfig($name);
-
-        if (is_null($config)) {
-            throw new InvalidArgumentException("Email confirmer [{$name}] is not defined.");
+                
+        if (! is_array($config)) {
+            throw new InvalidArgumentException(
+                "Email broker [{$name}] is not defined."
+            );
+        }
+        
+        if (! array_has($config, 'provider')) {
+            throw new InvalidArgumentException("User provider is not defined.");
         }
 
-        return new EmailBroker(
+        return new Broker(
             $this->createTokenRepository($config),
-            $this->app['auth']->createUserProvider($config['provider'])
+            $this->app['auth']->createUserProvider(array_get($config, 'provider'))
         );
     }
     
@@ -79,7 +87,7 @@ class EmailBrokerManager
      * Create a token repository instance based on the given configuration.
      *
      * @param  array $config
-     * @return \ViktorMiller\LaravelConfirmation\Repository\TokenRepositoryInterface
+     * @return \ViktorMiller\LaravelConfirmation\Contracts\TokenRepository
      */
     protected function createTokenRepository(array $config)
     {

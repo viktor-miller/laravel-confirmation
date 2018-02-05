@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}Notifications;
+namespace {{namespace}}Notifications\Auth;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,6 +13,11 @@ use Illuminate\Notifications\Messages\MailMessage;
 class Confirmation extends Notification
 {
     /**
+     * @var stirng
+     */
+    protected $email;
+    
+    /**
      *
      * @var string
      */
@@ -21,11 +26,13 @@ class Confirmation extends Notification
     /**
      * Create a notification instance.
      *
+     * @param  string $email
      * @param  string $token
      * @return void
      */
-    public function __construct($token)
+    public function __construct($email, $token)
     {
+        $this->email = $email;
         $this->token = $token;
     }
 
@@ -51,8 +58,11 @@ class Confirmation extends Notification
         return (new MailMessage)
             ->line('You have just registered successfully.')
             ->line('Please confirm your e-mail address.')
-            ->action('Verify', url(
-                config('app.url').route('confirmation', $this->token, false)
+            ->line('Your confirmation code: '. $this->token)
+            ->action('Verify', url(config('app.url').route('confirmation.auto', [
+                    'email' => $this->email,
+                    'token' => $this->token
+                ], false)
             ));
     }
 }

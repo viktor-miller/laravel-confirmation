@@ -6,20 +6,20 @@ use StdClass;
 use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use ViktorMiller\LaravelConfirmation\Contracts\TokenRepository;
 use ViktorMiller\LaravelConfirmation\Repository\DatabaseTokenRepository;
-use ViktorMiller\LaravelConfirmation\Repository\TokenRepositoryInterface;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class DatabaseRepositoryTest extends TestCase
+class DatabaseTokenRepositoryTest extends TestCase
 {
     use RefreshDatabase;
     
     /**
-     * @var TokenRepositoryInterface 
+     * @var TokenRepository 
      */
     protected $repository;
     
@@ -49,7 +49,9 @@ class DatabaseRepositoryTest extends TestCase
     }
     
     /**
-     * Test if a record is created
+     * Test whether a new record will be created
+     * 
+     * @return void
      */
     public function testCreate()
     {   
@@ -60,42 +62,42 @@ class DatabaseRepositoryTest extends TestCase
     }
     
     /**
-     * Test if a record is found by token
+     * Check if a record is found
+     * 
+     * @return void
      */
-    public function testRetriveByToken()
-    {
+    public function testExists()
+    {   
         $token = $this->repository->create($this->user);
         
-        $this->assertInstanceOf(StdClass::class, 
-                $this->repository->retriveByToken($token));
-    }
-    
-    /**
-     * Test if a record is found by user
-     */
-    public function testRetriveByUser()
-    {
-        $this->repository->create($this->user);
+        $result = $this->repository->exists($this->user, $token);
         
-        $this->assertInstanceOf(StdClass::class, 
-                $this->repository->retriveByUser($this->user));
+        $this->assertTrue($result);
     }
     
     /**
-     * Test if a record is deleted
+     * Check if the entry is deleted
+     * 
+     * @return void
      */
     public function testDelete()
     {
         $this->repository->create($this->user);
         
-        $this->assertTrue(is_int($this->repository->delete($this->user)));
+        $result = $this->repository->delete($this->user);
+        
+        $this->assertTrue(is_int($result));
     }
     
     /**
-     * Test if expired records are deleted
+     * Check if expired entries are deleted
+     * 
+     * @return void
      */
     public function testDeleteExpired()
     {
-        $this->assertTrue(is_int($this->repository->deleteExpired()));
+        $result = $this->repository->deleteExpired();
+        
+        $this->assertTrue(is_int($result));
     }
 }

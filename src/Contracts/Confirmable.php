@@ -1,13 +1,13 @@
 <?php
 
-namespace ViktorMiller\LaravelConfirmation;
+namespace ViktorMiller\LaravelConfirmation\Contracts;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-interface ShouldConfirmEmailInterface 
+interface Confirmable 
 {
     /**
      * Determine if email already confirmed

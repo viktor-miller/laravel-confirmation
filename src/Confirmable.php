@@ -2,14 +2,14 @@
 
 namespace ViktorMiller\LaravelConfirmation;
 
-use App\Notifications\Auth\Confirmation as ConfirmationNotification;
+use App\Notifications\Auth\Confirmation;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-trait ShouldConfirmEmail 
+trait Confirmable 
 {
     /**
      * Determine if email already confirmed
@@ -39,6 +39,6 @@ trait ShouldConfirmEmail
      */
     public function sendConfirmationNotification($token)
     {
-        $this->notify(new ConfirmationNotification($token));
+        $this->notify(new Confirmation($this->getConfirmationEmail(), $token));
     }
 }

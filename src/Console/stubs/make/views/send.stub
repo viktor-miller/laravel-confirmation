@@ -19,7 +19,7 @@
                 <div class="panel-heading">Email confirm</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{{ url('/confirmation') }}">
+                    <form class="form-horizontal" method="POST" action="{{ url('/email/confirmation') }}">
 
                         {{ csrf_field() }}
 

@@ -6,8 +6,9 @@ use App\User;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use ViktorMiller\LaravelConfirmation\EmailBrokerInterface;
-use ViktorMiller\LaravelConfirmation\Notifications\Confirmation;
+use ViktorMiller\LaravelConfirmation\Contracts\Broker;
+use ViktorMiller\LaravelConfirmation\Facades\Confirmation;
+use App\Notifications\Auth\Confirmation as ConfirmNotification;
 
 /**
  * 
@@ -24,7 +25,7 @@ class EmailBrokerTest extends TestCase
     protected $user;
     
     /**
-     * @var \ViktorMiller\LaravelConfirmation\EmailBrokerInterface
+     * @var \ViktorMiller\LaravelConfirmation\Contracts\Broker
      */
     protected $broker;
     
@@ -36,73 +37,94 @@ class EmailBrokerTest extends TestCase
         parent::setUp();
         
         $this->user = factory(User::class)->create();
-        $this->broker = $this->app['confirmation.email.broker'];
-        
-        Notification::fake();
     }  
     
     /**
-     * Testen ob einem noch nicht bestetigten Benutzer Bestätigungslink gesendet
-     * wird.
+     * Test whether a new token will be created and a notification will 
+     * be sent to an unconfirmed user
+     * 
+     * @return void 
      */
     public function testSend()
     {   
-        // exists unconfirmed user
-        $credentials = [
-            'email' => $this->user->email
-        ];
+        Notification::fake();
         
-        $this->assertEquals(EmailBrokerInterface::CONFIRM_LINK_SENT, 
-            $this->broker->send($credentials));
+        $result = Confirmation::send($this->user);
         
-        Notification::assertSentTo($this->user, Confirmation::class);
+        $this->assertEquals(Broker::CONFIRM_LINK_SENT, $result);
         
-        // exists confirmed user
+        Notification::assertSentTo($this->user, ConfirmNotification::class);
+    }
+    
+    /**
+     * Test whether a new token will be created and a notification will 
+     * be sent to a confirmed user
+     * 
+     * @return void 
+     */
+    public function testSendToConfirmedUser()
+    {
         $this->user->confirmed = true;
         $this->user->save();
         
-        $this->assertEquals(EmailBrokerInterface::INVALID_USER, 
-            $this->broker->send($credentials));
+        $result = Confirmation::send($this->user);
         
-        // not exists user
-        $this->assertEquals(EmailBrokerInterface::INVALID_USER, 
-                $this->broker->send([
-            'email' => 'test@mail123.com'
-        ]));
+        $this->assertEquals(Broker::INVALID_USER, $result);
     }
     
     /**
-     * Test getToken method
+     * Test whether a new token will be created and sent to unknown user
+     * 
+     * @return void 
      */
-    public function testGetToken()
+    public function testSendToUnknowUser()
     {
-        $this->broker->send([
-            'email' => $this->user->email
-        ]);
+        $result = Confirmation::send(str_random(6) .'@mail.com');
         
-        $token = $this->broker->getToken($this->user);
+        $this->assertEquals(Broker::INVALID_USER, $result);
+    }
+    
+    /**
+     * Test whether a new token will be created
+     * 
+     * @return void
+     */
+    public function testCreateToken()
+    {
+        $token = Confirmation::createToken($this->user);
         
         $this->assertTrue(is_string($token));
-        $this->assertTrue(strlen($token) > 0);
     }
     
     /**
-     * Test if unconfirmed user is confirmed by valid token
+     * Test if the received token exists
+     * 
+     * @return void
+     */
+    public function testExistsToken()
+    {
+        $token = Confirmation::createToken($this->user);
+        
+        $result = Confirmation::existsToken($this->user, $token);
+        
+        $this->assertTrue($result);
+    }
+    
+    /**
+     * Test whether an unconfirmed user will be confirmed
+     * 
+     * @return void
      */
     public function testConfirm()
     {   
-        $this->broker->send([
-            'email' => $this->user->email
-        ]);
+        $token = Confirmation::createToken($this->user);
         
-        $this->assertEquals(
-            EmailBrokerInterface::EMAIL_CONFIRMED, $this->broker->confirm(
-                $this->broker->getToken($this->user), function($user) {
-                    $user->confirmed = true;
-                    $user->save();
-                }
-            )
-        );
+        $result = Confirmation::confirm($this->user, $token, function($user) {
+            $user->confirmed = true;
+            $user->save();
+        });
+        
+        $this->assertEquals(Broker::EMAIL_CONFIRMED, $result);
         
         $this->user->refresh();
         
@@ -110,38 +132,68 @@ class EmailBrokerTest extends TestCase
     }
     
     /**
-     * Test if confirmed user is not confirmed by valid token
+     * Test whether an already verified user will be verified
+     * 
+     * @return void
      */
-    public function testConfirmConfirmed()
-    {
-        $this->broker->send([
-            'email' => $this->user->email
-        ]);
-        
+    public function testConfirmConfirmedUser()
+    {   
         $this->user->confirmed = true;
         $this->user->save();
         
-        $this->assertEquals(
-            EmailBrokerInterface::INVALID_USER, $this->broker->confirm(
-                $this->broker->getToken($this->user), function() {})
-        );
-            
-        $this->assertNull($this->broker->getToken($this->user));
+        $token = Confirmation::createToken($this->user);
+        
+        $result = Confirmation::confirm($this->user, $token, function() {});
+        
+        $this->assertEquals(Broker::INVALID_USER, $result);
     }
     
     /**
-     * Test if unconfirmed user is not confirmed by invalid token
+     * Test whether an already verified user will be verified
+     * 
+     * @return void
+     */
+    public function testConfirmUnknownUser()
+    {
+        $email = str_random(5). '@mail.com';
+        $token = Confirmation::createToken($this->user);
+        
+        $result = Confirmation::confirm($email, $token, function(){});
+        
+        $this->assertEquals(Broker::INVALID_USER, $result);
+    }
+    
+    
+    /**
+     * Test whether the unconfirmed user will be confirmed with 
+     * an incorrect token
+     * 
+     * @return void
      */
     public function testConfirmWrongToken()
     {
-        $this->broker->send([
-            'email' => $this->user->email
-        ]);
+        Confirmation::createToken($this->user);
         
-        $this->assertEquals(
-            EmailBrokerInterface::INVALID_TOKEN, $this->broker->confirm(
-                'abcdefghijklmnopqrstuvwxyz', function() {}
-            )
+        $result = Confirmation::confirm(
+            $this->user, str_random(20), function(){}
         );
+        
+        $this->assertEquals(Broker::INVALID_TOKEN, $result);
+    }
+    
+    /**
+     * Test whether a new token will be deleted
+     * 
+     * @return void
+     */
+    public function testDeleteToken()
+    {
+        $token = Confirmation::createToken($this->user);
+        
+        Confirmation::deleteToken($this->user);
+        
+        $result = Confirmation::confirm($this->user, $token, function(){});
+        
+        $this->assertEquals(Broker::INVALID_TOKEN, $result);
     }
 }

@@ -6,14 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
-use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
+use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
+use ViktorMiller\LaravelConfirmation\Contracts\TokenRepository;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class DatabaseTokenRepository implements TokenRepositoryInterface 
+class DatabaseTokenRepository implements TokenRepository 
 {
     /**
      * The database connection instance.
@@ -60,8 +61,9 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
      * @param  int  $expires
      * @return void
      */
-    public function __construct(ConnectionInterface $connection, HasherContract $hasher,
-                                $table, $hashKey, $expires = 60)
+    public function __construct(ConnectionInterface $connection, 
+                                HasherContract $hasher,$table, $hashKey, 
+                                $expires = 60)
     {
         $this->table = $table;
         $this->hasher = $hasher;
@@ -73,10 +75,10 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Create a new token record.
      *
-     * @param  ShouldConfirmEmailInterface $user
+     * @param  Confirmable $user
      * @return string
      */
-    public function create(ShouldConfirmEmailInterface $user)
+    public function create(Confirmable $user)
     {
         $this->deleteExisting($user);
 
@@ -90,10 +92,10 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Delete all existing confirm tokens from the database.
      *
-     * @param  ShouldConfirmEmailInterface $user
+     * @param  Confirmable $user
      * @return int
      */
-    protected function deleteExisting(ShouldConfirmEmailInterface $user)
+    protected function deleteExisting(Confirmable $user)
     {
         return $this->getTable()
                 ->where('email', $user->getConfirmationEmail())
@@ -103,53 +105,41 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Build the record payload for the table.
      *
-     * @param  ShouldConfirmEmailInterface $user
-     * @param  string  $token
+     * @param  Confirmable $user
+     * @param  string $token
      * @return array
      */
-    protected function getPayload(ShouldConfirmEmailInterface $user, $token)
+    protected function getPayload(Confirmable $user, $token)
     {
         return [
             'email' => $user->getConfirmationEmail(), 
-            'token' => $token, 
+            'token' => $this->hasher->make($token), 
             'created_at' => new Carbon
         ];
     }
     
     /**
-     * 
+     * Determine if a token record exists and is valid.
+     *
+     * @param  Confirmable $user
      * @param  string $token
-     * @return null|StdClass
+     * @return bool
      */
-    public function retriveByToken($token)
+    public function exists(Confirmable $user, $token)
     {
-        $record = $this->getTable()->where('token', $token)->first();
-        
-        return $record && ! $this->tokenExpired($record->created_at)
-                ? $record
-                : null;
-    }
-    
-    /**
-     * 
-     * @param  ShouldConfirmEmailInterface $user
-     * @return null|StdClass
-     */
-    public function retriveByUser(ShouldConfirmEmailInterface $user)
-    {
-        $record = $this->getTable()
-                ->where('email', $user->getConfirmationEmail())
-                ->first();
-        
-        return $record && ! $this->tokenExpired($record->created_at)
-                ? $record
-                : null;
+        $record = (array) $this->getTable()->where(
+            'email', $user->getConfirmationEmail()
+        )->first();
+
+        return $record &&
+               ! $this->tokenExpired($record['created_at']) &&
+                 $this->hasher->check($token, $record['token']);
     }
 
     /**
      * Determine if the token has expired.
      *
-     * @param  string  $createdAt
+     * @param  string $createdAt
      * @return bool
      */
     protected function tokenExpired($createdAt)
@@ -160,10 +150,10 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Delete a token record by user.
      *
-     * @param  CanConfirmEmailContract $user
+     * @param  Confirmable $user
      * @return int
      */
-    public function delete(ShouldConfirmEmailInterface $user)
+    public function delete(Confirmable $user)
     {
         return $this->deleteExisting($user);
     }

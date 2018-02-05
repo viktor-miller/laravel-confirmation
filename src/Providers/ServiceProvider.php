@@ -2,13 +2,12 @@
 
 namespace ViktorMiller\LaravelConfirmation\Providers;
 
-use Illuminate\Support\Facades\Event;
-use Illuminate\Auth\Events\Registered;
-use ViktorMiller\LaravelConfirmation\Facades\Email;
+use Illuminate\Support\Facades\Validator;
+use ViktorMiller\LaravelConfirmation\BrokerManager;
+use ViktorMiller\LaravelConfirmation\Contracts\Broker;
 use ViktorMiller\LaravelConfirmation\Console\Commands;
-use ViktorMiller\LaravelConfirmation\EmailBrokerManager;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
+use ViktorMiller\LaravelConfirmation\Contracts\BrokerManager as BrokerManagerContract;
 
 /**
  * 
@@ -18,32 +17,35 @@ use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
 class ServiceProvider extends BaseServiceProvider 
 {   
     /**
+     * @var string 
+     */
+    protected $packageRoot;
+    
+    /**
+     * Create a new service provider instance.
+     *
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @return void
+     */
+    public function __construct($app)
+    {
+        parent::__construct($app);
+        
+        $this->root = __DIR__ .'/../../';
+    }
+    
+    /**
      * Bootstrap any application services.
      *
      * @return void
      */
     public function boot()
-    {
-        $packagePath = __DIR__ .'/../../';
-        
-        // Configuration
-        $this->publishes([
-            $packagePath .'config/confirmation.php' => config_path('confirmation.php'),
-        ]);
-        
-        // Translations
-        $translationsPath = $packagePath .'resources/lang';
-        
-        $this->loadTranslationsFrom($translationsPath, 'confirmation');
-        $this->publishes([
-            $translationsPath => resource_path('lang/vendor/confirmation'),
-        ], 'confirmation:translations');
-        
-        // Migration
-        $this->loadMigrationsFrom($packagePath . 'database/migrations');
-        
-        $this->addEventListener();
+    {   
+        $this->initConfigPublish();
+        $this->initTranslationPublish();
+        $this->initMigrations();
         $this->initConsoleCommands();
+        $this->initValidatorRules();
     }
 
     /**
@@ -53,32 +55,46 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(
-            __DIR__ .'/../../config/confirmation.php', 'confirmation'
-        );
+        $this->mergeConfig();
         
-        $this->app->singleton('confirmation.email', function ($app) {
-            return new EmailBrokerManager($app);
+        $this->app->singleton(BrokerManagerContract::class, function ($app) {
+            return new BrokerManager($app);
         });
         
-        $this->app->bind('confirmation.email.broker', function ($app) {
-            return $app->make('confirmation.email')->broker();
+        $this->app->bind(Broker::class, function ($app) {
+            return $app->make(BrokerManagerContract::class)->broker();
         });
     }
     
     /**
-     * 
-     * @return void
+     * Init config publish
      */
-    protected function addEventListener()
+    protected function initConfigPublish()
     {
-        Event::listen(Registered::class, function(Registered $event) {
-            if ($event->user instanceof ShouldConfirmEmailInterface) {
-                Email::broker()->send([
-                    'email' => $event->user->email
-                ]);
-            }
-        });
+        $this->publishes([
+            $this->root .'config/confirmation.php' => config_path('confirmation.php'),
+        ], 'confirmation:config');
+    }
+    
+    /**
+     * Init translation publish
+     */
+    protected function initTranslationPublish()
+    {
+        $path = $this->root .'resources/lang';
+        
+        $this->loadTranslationsFrom($path, 'confirmation');
+        $this->publishes([
+            $path => resource_path('lang/vendor/confirmation'),
+        ], 'confirmation:translations');
+    }
+    
+    /**
+     * Init package migrations
+     */
+    protected function initMigrations()
+    {
+        $this->loadMigrationsFrom($this->root .'database/migrations');
     }
     
     /**
@@ -96,12 +112,33 @@ class ServiceProvider extends BaseServiceProvider
     }
     
     /**
+     * 
+     * @return void 
+     */
+    protected function initValidatorRules()
+    {
+        Validator::extend(
+            'verified', 'ViktorMiller\LaravelConfirmation\Rules\Email@verified'
+        );
+    }
+    
+    /**
+     * Merge package config
+     */
+    protected function mergeConfig()
+    {
+        $this->mergeConfigFrom(
+            $this->root .'config/confirmation.php', 'confirmation'
+        );
+    }
+    
+    /**
      * Get the services provided by the provider.
      *
      * @return array
      */
     public function provides()
     {
-        return ['confirmation.email', 'confirmation.email.broker'];
+        return [BrokerManagerContract::class, Broker::class];
     }
 }
