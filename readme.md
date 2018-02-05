@@ -205,7 +205,7 @@ for Laravel >= 5.5
 	$this->validate($request, [
 		'email' => [
 			'required', 'string', new Verified(24)
-       		],
+       	],
 	]);
     
     
