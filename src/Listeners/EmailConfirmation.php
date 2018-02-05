@@ -1,0 +1,41 @@
+<?php
+
+namespace ViktorMiller\LaravelConfirmation\Listeners;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use ViktorMiller\LaravelConfirmation\Contracts\Broker;
+use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
+
+/**
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
+ */
+class EmailConfirmation implements ShouldQueue
+{
+    /**
+     * @var Broker 
+     */
+    protected $broker;
+    
+    /**
+     * 
+     * @param Broker $broker
+     */
+    public function __construct(Broker $broker)
+    {
+        $this->broker = $broker;
+    }
+    
+    /**
+     * 
+     * @param  mixed $event
+     * @return void
+     */
+    public function handle($event)
+    {
+        if ($event->user && $event->user instanceof Confirmable) {
+            $this->broker->send($event->user);
+        }
+    }
+}
