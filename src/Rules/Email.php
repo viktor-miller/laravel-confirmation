@@ -14,6 +14,7 @@ use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
 class Email
 {
     /**
+     * Determine if the validation rule passes.
      * 
      * @param  string $attribute
      * @param  string $value

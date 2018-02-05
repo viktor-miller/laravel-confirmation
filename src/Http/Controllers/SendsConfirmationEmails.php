@@ -4,22 +4,17 @@ namespace ViktorMiller\LaravelConfirmation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ViktorMiller\LaravelConfirmation\Contracts\Broker;
+use ViktorMiller\LaravelConfirmation\Facades\Confirmation;
 
 /**
  * 
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-trait SendConfirmation
-{
-    use ConfirmationBroker;
-    
+trait SendsConfirmationEmails
+{   
     /**
-     * @var string
-     */
-    protected $redirectTo = '/email/confirmation/manual';
-    
-    /**
+     * Display the form to request a confirmation link.
      * 
      * @return \Illuminate\Http\Response
      */
@@ -29,6 +24,7 @@ trait SendConfirmation
     }
     
     /**
+     * Send a confirmation link to the given user.
      * 
      * @param  Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -45,6 +41,7 @@ trait SendConfirmation
     }
     
     /**
+     * Validate the email for the given request.
      * 
      * @param  Request $request
      * @return void
@@ -57,6 +54,7 @@ trait SendConfirmation
     }
     
     /**
+     * Get the response for a successful confirmation link.
      * 
      * @param  Request $request 
      * @param  string $response
@@ -70,6 +68,7 @@ trait SendConfirmation
     }
     
     /**
+     * Get the response for a failed confirmation link.
      * 
      * @param  string $response
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -77,5 +76,15 @@ trait SendConfirmation
     protected function notSendedResponse($response)
     {
         return back()->with('error', trans($response));
+    }
+    
+    /**
+     * Get the broker to be used during email confirmation.
+     * 
+     * @return \ViktorMiller\LaravelConfirmation\Contracts\Broker
+     */
+    protected function broker()
+    {
+        return Confirmation::broker();
     }
 }

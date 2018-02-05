@@ -1,0 +1,28 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use ViktorMiller\LaravelConfirmation\Http\Controllers\SendsConfirmationEmails;
+
+/**
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
+ */
+class SendConfirmationController extends Controller
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Send Confirmation Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles the sending of a notification with instructions 
+    | for confirming an email address of users and redirects them to a form 
+    | for confirmation. The controller uses a trait to conveniently provide 
+    | its functionality to your applications.
+    |
+    */
+    
+    use SendsConfirmationEmails;
+}

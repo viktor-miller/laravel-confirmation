@@ -53,6 +53,7 @@ class Verified implements Rule
     }
     
     /**
+     * Get Auth's guard
      * 
      * @return mixed
      */

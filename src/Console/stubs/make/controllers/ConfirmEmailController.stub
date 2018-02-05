@@ -3,7 +3,7 @@
 namespace {{namespace}}Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use ViktorMiller\LaravelConfirmation\Http\Controllers\EmailConfirmation;
+use ViktorMiller\LaravelConfirmation\Http\Controllers\ConfirmsEmails;
 
 /**
  * 
@@ -12,5 +12,16 @@ use ViktorMiller\LaravelConfirmation\Http\Controllers\EmailConfirmation;
  */
 class ConfirmEmailController extends Controller
 {
-    use EmailConfirmation;
+    /*
+    |--------------------------------------------------------------------------
+    | Confirm Email Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles the confirmation of the email address of the 
+    | users and redirecting them to the main screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
+    |
+    */
+    
+    use ConfirmsEmails;
 }

@@ -12,7 +12,7 @@ use ViktorMiller\LaravelConfirmation\Facades\Confirmation;
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class ConfirmEmailTest extends TestCase
+class ConfirmEmailControllerTest extends TestCase
 {
     use RefreshDatabase;
     

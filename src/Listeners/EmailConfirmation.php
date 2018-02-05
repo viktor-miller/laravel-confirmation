@@ -28,6 +28,7 @@ class EmailConfirmation implements ShouldQueue
     }
     
     /**
+     * Send confirmation notification to given user
      * 
      * @param  mixed $event
      * @return void

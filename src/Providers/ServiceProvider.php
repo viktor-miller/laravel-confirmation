@@ -17,6 +17,8 @@ use ViktorMiller\LaravelConfirmation\Contracts\BrokerManager as BrokerManagerCon
 class ServiceProvider extends BaseServiceProvider 
 {   
     /**
+     * Package root path
+     * 
      * @var string 
      */
     protected $packageRoot;
@@ -68,6 +70,8 @@ class ServiceProvider extends BaseServiceProvider
     
     /**
      * Init config publish
+     * 
+     * @return void
      */
     protected function initConfigPublish()
     {
@@ -78,6 +82,8 @@ class ServiceProvider extends BaseServiceProvider
     
     /**
      * Init translation publish
+     * 
+     * @return void
      */
     protected function initTranslationPublish()
     {
@@ -91,6 +97,8 @@ class ServiceProvider extends BaseServiceProvider
     
     /**
      * Init package migrations
+     * 
+     * @return void
      */
     protected function initMigrations()
     {
@@ -112,6 +120,7 @@ class ServiceProvider extends BaseServiceProvider
     }
     
     /**
+     * Init Validator ruless
      * 
      * @return void 
      */
@@ -124,6 +133,8 @@ class ServiceProvider extends BaseServiceProvider
     
     /**
      * Merge package config
+     * 
+     * @return void
      */
     protected function mergeConfig()
     {

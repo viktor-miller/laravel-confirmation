@@ -19,7 +19,7 @@
                 <div class="panel-heading">Email confirm</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal" method="GET" action="{{ url('/email/confirmation/auto') }}">
+                    <form class="form-horizontal" method="GET" action="{{ route('confirmation.auto') }}">
 
                         {{ csrf_field() }}
 

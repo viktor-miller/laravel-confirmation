@@ -51,8 +51,8 @@ class Confirmation extends Command
      * @var array
      */
     protected $controllers = [
-        __DIR__ .'/../stubs/make/controllers/SendEmailConfirmationController.stub' => 
-            'App/Http/Controllers/Auth/SendEmailConfirmationController.php',
+        __DIR__ .'/../stubs/make/controllers/SendConfirmationController.stub' => 
+            'App/Http/Controllers/Auth/SendConfirmationController.php',
         __DIR__ .'/../stubs/make/controllers/ConfirmEmailController.stub' => 
             'App/Http/Controllers/Auth/ConfirmEmailController.php'
     ];

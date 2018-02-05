@@ -178,9 +178,9 @@ class Broker implements BrokerContract
      */
     public function routes()
     {
-        Route::get('/email/confirmation', 'Auth\SendEmailConfirmationController@index');
-        Route::post('/email/confirmation', 'Auth\SendEmailConfirmationController@send');
-        Route::get('/email/confirmation/manual', 'Auth\ConfirmEmailController@index')->name('confirmation.manual');
-        Route::get('/email/confirmation/auto', 'Auth\ConfirmEmailController@confirm')->name('confirmation.auto');
+        Route::get('/email/confirm', 'Auth\SendConfirmationController@index')->name('confirmation');
+        Route::post('/email/confirm/send', 'Auth\SendConfirmationController@send')->name('confirmation.send');
+        Route::get('/email/confirm/manual', 'Auth\ConfirmEmailController@index')->name('confirmation.manual');
+        Route::get('/email/confirm/auto', 'Auth\ConfirmEmailController@confirm')->name('confirmation.auto');
     }
 }

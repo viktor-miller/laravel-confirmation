@@ -13,7 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class SendEmailConfirmationTest extends TestCase
+class SendConfirmationControllerTest extends TestCase
 {
     use RefreshDatabase;
     
@@ -39,7 +39,7 @@ class SendEmailConfirmationTest extends TestCase
      */
     public function testIndex()
     {
-        $response = $this->get('/email/confirmation');
+        $response = $this->get(route('confirmation'));
         $response->assertStatus(200);
     }
     
@@ -53,7 +53,7 @@ class SendEmailConfirmationTest extends TestCase
         Session::start();
         Notification::fake();
          
-        $response = $this->call('POST', '/email/confirmation', [
+        $response = $this->call('POST', route('confirmation.send'), [
             '_token' => csrf_token(),
             'email' => $this->user->email
         ]);
@@ -77,7 +77,7 @@ class SendEmailConfirmationTest extends TestCase
         $this->user->confirmed = true;
         $this->user->save();
          
-        $response = $this->call('POST', '/email/confirmation', [
+        $response = $this->call('POST', route('confirmation.send'), [
             '_token' => csrf_token(),
             'email' => $this->user->email
         ]);
@@ -100,7 +100,7 @@ class SendEmailConfirmationTest extends TestCase
         $this->user->confirmed = true;
         $this->user->save();
          
-        $response = $this->call('POST', '/email/confirmation', [
+        $response = $this->call('POST', route('confirmation.send'), [
             '_token' => csrf_token(),
             'email' => str_random(30) .'@mail.com'
         ]);
