@@ -203,9 +203,9 @@ for Laravel >= 5.5
 	use ViktorMiller\LaravelConfirmation\Rules\Verified;
 	
 	$this->validate($request, [
-   		'email' => [
-      		'required', 'string', new Verified(24)
-       ],
+		'email' => [
+			'required', 'string', new Verified(24)
+       		],
 	]);
     
     
