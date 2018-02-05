@@ -207,5 +207,3 @@ for Laravel >= 5.5
 			'required', 'string', new Verified(24)
        	],
 	]);
-    
-    
