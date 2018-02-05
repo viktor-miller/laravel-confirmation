@@ -1,99 +1,186 @@
-## Laravel Email Confirmation ##
+# Laravel Email Confirmation #
 
-This package is to add email confirmation to Laravel 5.4/5.5 project.
+This package is intended to confirm the email address of the user. **Tested and used with Laravel 5.4 and 5.5**
 
-The package add a listener to event **Illuminate\Auth\Events\Registered**. When this event is fired then a record with unique token will be created and a notification with confirmation link will be sent. After click on verification link will user be confirmed and his token record will be deleted.
-
-### Features ###
-- create a migration to add "confirmed" column to users table
-- create a migration to create "email_confirmations" table
-- scaffold for controller, routes and notification
-- publish views, translations and configs
-- multilanguage support
-- validation rule to block login or password reset for not confirmed user
-- validation rule support optional property to set pause in hours. For example: after registration user allow login next 24 hours without email confirmation.
-- form to resend notification with confirmation link
+## Features ##
+- Migration to add "confirmed" column to users table
+- Migration to create "email_confirmations" table
+- Scaffold for view, controller, routes and notification
+- Publish translations and configs
+- The validation rule for unconfirmed users. The validation rule supports an additional property for setting a pause in hours. For example: after registration, the user is allowed to log in for (n) hours without confirming the email address.
+- HTML form for resending a notification with instructions for confirming an email address
+- HTML form for confirmation of email address in manual mode (Enter e-mail and token).
+- Support for confirmation of the email address in the automatic mode (click on the link that was received by e-mail)
 
 
-### Installation ###
+## Installation ##
 
-Add package to your **composer.json** file:
+1. Add package to your **composer.json** file:
 
 	composer require viktor-miller/laravel-confirmation
 	
-For Laravel <= 5.4 add service provider and aliace to **config/app.php**
+2. For Laravel 5.4 add service provider and aliase to **config/app.php**
 
 	'providers' => [
 		...
 		ViktorMiller\LaravelConfirmation\Providers\ServiceProvider::class,
 		...
 	],
+	'aliases' => [
+		...
+		'Confirmation' => ViktorMiller\LaravelConfirmation\Facades\Confirmation::class
 
-Add a **ShouldConfirmEmail** trait and implement **ShouldConfirmEmailInterface** interface on your User model
+3. Add a **Confirmable** trait and implement **Confirmable** interface on your User model
 
-	<?php
-	
-	...
-	use Illuminate\Notifications\Notifiable;
-	use Illuminate\Foundation\Auth\User as Authenticatable;
-	use ViktorMiller\LaravelConfirmation\ShouldConfirmEmail;
-	use ViktorMiller\LaravelConfirmation\ShouldConfirmEmailInterface;
-	
-	class User extends Authenticatable implements ShouldConfirmEmailInterface
-	{
-	    use Notifiable, ShouldConfirmEmail;
+		<?php
+		
+		...
+		use Illuminate\Notifications\Notifiable;
+		use Illuminate\Foundation\Auth\User as Authenticatable;
+		use ViktorMiller\LaravelConfirmation\Confirmable;
+		use ViktorMiller\LaravelConfirmation\Contracts\Confirmable as ConfirmableContract;
+		
+		class User extends Authenticatable implements Confirmable
+		{
+		    use Notifiable, Confirmable;
+		    
+		    ...
+
+4. Add validation rule in LoginController and ForgotPasswordController to restrict users with an unconfirmed email address.
+
+	For Laravel >= 5.4:
+
+	LoginController
+
+		<?php
+		
+		namespace App\Http\Controllers\Auth;
+		
+		class LoginController extends Controller
+		{
+			/**
+		     * Validate the user login request.
+		     *
+		     * @param  \Illuminate\Http\Request  $request
+		     * @return void
+		     */
+		    protected function validateLogin(Request $request)
+		    {
+		        $this->validate($request, [
+		            $this->username() => 'required|string|verified',
+		            'password' => 'required|string',
+		        ]);
+		    }
+
+	and ForgotPasswordController
+
+		<?php
+		
+		namespace App\Http\Controllers\Auth;
+		
+		class ForgotPasswordController extends Controller
+		{ 
+			/**
+		     * Validate the email for the given request.
+		     *
+		     * @param  \Illuminate\Http\Request  $request
+		     * @return void
+		     */
+		    protected function validateEmail(Request $request)
+		    {
+		        $this->validate($request, ['email' => 'required|email|verified']);
+		    }
 	    
-	    ...
-
-Change trait reference in **App\Http\Controller\Auth\LoginController**
-
-	<?php
-
-	namespace App\Http\Controllers\Auth;
+	For Laravel 5.5:
 	
-	use App\Http\Controllers\Controller;
-	use ViktorMiller\LaravelConfirmation\Http\Controllers\AuthenticatesUsers;
+	LoginController
+
+		<?php
 	
-	class LoginController extends Controller
-	{
-	    use AuthenticatesUsers;
+		namespace App\Http\Controllers\Auth;
+		
+		use ViktorMiller\LaravelConfirmation\Rules\Verified;
+		
+		class LoginController extends Controller
+		{
+			/**
+		     * Validate the user login request.
+		     *
+		     * @param  \Illuminate\Http\Request  $request
+		     * @return void
+		     */
+		    protected function validateLogin(Request $request)
+		    {
+		        $this->validate($request, [
+		            $this->username() => [
+		                'required', 'string', new Verified
+		            ],
+		            'password' => 'required|string',
+		        ]);
+		    }
 	    
+	and ForgotPasswordController
+	
+		<?php
+		
+		namespace App\Http\Controllers\Auth;
+		
+		use ViktorMiller\LaravelConfirmation\Rules\Verified;
+		    
+		class ForgotPasswordController extends Controller
+		{ 
+			...
+			/**
+		     * Validate the email for the given request.
+		     *
+		     * @param  \Illuminate\Http\Request  $request
+		     * @return void
+		     */
+		    protected function validateEmail(Request $request)
+		    {
+		        $this->validate($request, ['email' => [
+		        	'required', 'email', new Verified
+		        ]);
+		    }
 	    ...
-
-Change trait reference in **App\Http\Controller\Auth\ForgotPasswordController**
-
-	<?php
-
-	namespace App\Http\Controllers\Auth;
+5. Add event listener to **Illuminate\Auth\Events\Registered**
 	
-	use App\Http\Controllers\Controller;
-	use ViktorMiller\LaravelConfirmation\Http\Controllers\SendsPasswordResetEmails;
+		<?php
+		
+		namespace App\Providers;
 	
-	class ForgotPasswordController extends Controller
-	{
-	    use SendsPasswordResetEmails;
-	    
-	    ...
-
-Make a migration to add columns on users table
-
-	php artisan migrate
+		use Illuminate\Support\Facades\Event;
+		use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 	
-Run artisan confirmation command
-	
-	php artisan confirmation
+		class EventServiceProvider extends ServiceProvider
+		{
+		    /**
+		     * The event listener mappings for the application.
+		     *
+		     * @var array
+		     */
+		    protected $listen = [
+		        'Illuminate\Auth\Events\Registered' => [
+		            'ViktorMiller\LaravelConfirmation\Listeners\EmailConfirmation'
+		        ]
+	        
 
-### Publish ###
+6. Run migrations
+
+		php artisan migrate
+	
+7. Run artisan confirmation command
+	
+		php artisan confirmation
+
+
+## Publish ##
 
 If you want to do some changes or add a language you can publish translations
 
 	php artisan vendor:publish --tag=confirmation:translations
-	
-If you want to do some changes on views you can publish views
 
-	php artisan vendor:publish --tag=confirmation:views
-
-if you want to do some changes on config you can publish config
+If you want to do some changes on config you can publish config
 
 	php artisan vendor:publish --tag=confirmation:config
 	
@@ -103,21 +190,22 @@ supported options
 	php artisan confirmation -h
 	
 ### Validation ###
-If you want to set pause for confirmation validation override **validateLogin** method in **App\Http\Controller\Auth\LoginController** and **validateEmail** in **App\Http\Controller\Auth\ForgotPasswordController**.
+If you want to allow users to ignore the verification rule "verified" for a certain number of hours (for example 24h):
 
-For expample 24 Hours
-
-	/**
-     * Validate the email for the given request.
-     *
-     * @param \Illuminate\Http\Request  $request
-     * @return void
-     */
-    protected function validateEmail(Request $request)
-    {
-        $this->validate($request, [
-            'email' => 'required|email|email_confirmed:24'
-        ], [
-            'email_confirmed' => trans('confirmation::validation.not_confirmed')
-        ]);
-    }
+for Laravel >= 5.4
+	
+    $this->validate($request, [
+    	'email' => 'required|email|verified:24'
+    ]);
+    
+for Laravel >= 5.5
+	
+	use ViktorMiller\LaravelConfirmation\Rules\Verified;
+	
+	$this->validate($request, [
+   		'email' => [
+      		'required', 'string', new Verified(24)
+       ],
+	]);
+    
+    
