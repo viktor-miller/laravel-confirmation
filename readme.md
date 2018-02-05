@@ -1,4 +1,4 @@
-# Laravel Email Confirmation #
+# Laravel Email Confirmation # 
 
 This package is intended to confirm the email address of the user. **Tested and used with Laravel 5.4 and 5.5**
 
