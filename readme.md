@@ -192,7 +192,7 @@ If you want to allow users to ignore the verification rule "verified" for a cert
 for Laravel >= 5.4
 	
     $this->validate($request, [
-    	'email' => 'required|email|verified:24'
+        'email' => 'required|email|verified:24'
     ]);
     
 for Laravel >= 5.5
@@ -200,7 +200,7 @@ for Laravel >= 5.5
 	use ViktorMiller\LaravelConfirmation\Rules\Verified;
 	
 	$this->validate($request, [
-		'email' => [
-			'required', 'string', new Verified(24)
-       	],
+        'email' => [
+            'required', 'string', new Verified(24)
+        ],
 	]);
