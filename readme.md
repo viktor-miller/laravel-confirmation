@@ -78,7 +78,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 		
 		class ForgotPasswordController extends Controller
 		{ 
-			/**
+            /**
 		     * Validate the email for the given request.
 		     *
 		     * @param  \Illuminate\Http\Request  $request
@@ -101,7 +101,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 		
 		class LoginController extends Controller
 		{
-			/**
+            /**
 		     * Validate the user login request.
 		     *
 		     * @param  \Illuminate\Http\Request  $request
@@ -127,8 +127,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 		    
 		class ForgotPasswordController extends Controller
 		{ 
-			...
-			/**
+            /**
 		     * Validate the email for the given request.
 		     *
 		     * @param  \Illuminate\Http\Request  $request
@@ -152,7 +151,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 	
 		class EventServiceProvider extends ServiceProvider
 		{
-		    /**
+            /**
 		     * The event listener mappings for the application.
 		     *
 		     * @var array
