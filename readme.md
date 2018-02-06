@@ -135,9 +135,9 @@ This package is intended to confirm the email address of the user. **Tested and 
 		     */
 		    protected function validateEmail(Request $request)
 		    {
-		        $this->validate($request, ['email' => [
-		        	'required', 'email', new Verified
-		        ]);
+		        $this->validate($request, [
+                    'email' => ['required', 'email', new Verified]
+                );
 		    }
 	    ...
 5. Add event listener to **Illuminate\Auth\Events\Registered**
