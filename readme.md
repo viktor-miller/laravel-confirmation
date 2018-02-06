@@ -56,7 +56,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 		
 		class LoginController extends Controller
 		{
-			/**
+            /**
 		     * Validate the user login request.
 		     *
 		     * @param  \Illuminate\Http\Request  $request
