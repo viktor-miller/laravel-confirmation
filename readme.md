@@ -17,7 +17,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 
 1. Add package to your **composer.json** file:
 
-	composer require viktor-miller/laravel-confirmation
+        composer require viktor-miller/laravel-confirmation
 	
 2. For Laravel 5.4 add service provider and aliase to **config/app.php**
 
@@ -144,7 +144,7 @@ This package is intended to confirm the email address of the user. **Tested and 
 		{ 
             ...
             
-            /**
+                    /**
 		     * Validate the email for the given request.
 		     *
 		     * @param  \Illuminate\Http\Request  $request
@@ -153,8 +153,8 @@ This package is intended to confirm the email address of the user. **Tested and 
 		    protected function validateEmail(Request $request)
 		    {
 		        $this->validate($request, [
-                    'email' => ['required', 'email', new Verified]
-                );
+                            'email' => ['required', 'email', new Verified]
+                        ]);
 		    }
 	        
             ...

@@ -1,2 +1,4 @@
-
+/**
+ * Confirmation routes
+ */
 Confirmation::routes();
