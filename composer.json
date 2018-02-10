@@ -3,7 +3,6 @@
     "description": "laravel email confirmation package",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.1",
     "authors": [
         {
             "name": "Viktor Miller",
