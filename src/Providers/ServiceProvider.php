@@ -2,11 +2,13 @@
 
 namespace ViktorMiller\LaravelConfirmation\Providers;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Validator;
 use ViktorMiller\LaravelConfirmation\BrokerManager;
 use ViktorMiller\LaravelConfirmation\Contracts\Broker;
 use ViktorMiller\LaravelConfirmation\Console\Commands;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use ViktorMiller\LaravelConfirmation\Http\Middleware\Confirmed;
 use ViktorMiller\LaravelConfirmation\Contracts\BrokerManager as BrokerManagerContract;
 
 /**
@@ -39,15 +41,18 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Bootstrap any application services.
      *
+     * @param  Router $router
      * @return void
      */
-    public function boot()
+    public function boot(Router $router)
     {   
         $this->initConfigPublish();
         $this->initTranslationPublish();
         $this->initMigrations();
         $this->initConsoleCommands();
         $this->initValidatorRules();
+        
+        $router->pushMiddlewareToGroup('web', Confirmed::class);
     }
 
     /**

@@ -98,7 +98,7 @@ class DatabaseTokenRepository implements TokenRepository
     protected function deleteExisting(Confirmable $user)
     {
         return $this->getTable()
-                ->where('email', $user->getConfirmationEmail())
+                ->where('email', $user->confirmationEmail())
                 ->delete();
     }
 
@@ -112,7 +112,7 @@ class DatabaseTokenRepository implements TokenRepository
     protected function getPayload(Confirmable $user, $token)
     {
         return [
-            'email' => $user->getConfirmationEmail(), 
+            'email' => $user->confirmationEmail(), 
             'token' => $this->hasher->make($token), 
             'created_at' => new Carbon
         ];
@@ -128,7 +128,7 @@ class DatabaseTokenRepository implements TokenRepository
     public function exists(Confirmable $user, $token)
     {
         $record = (array) $this->getTable()->where(
-            'email', $user->getConfirmationEmail()
+            'email', $user->confirmationEmail()
         )->first();
 
         return $record &&

@@ -21,7 +21,14 @@ interface Confirmable
      *
      * @return string
      */
-    public function getConfirmationEmail();
+    public function confirmationEmail();
+    
+    /**
+     * Get created at
+     * 
+     * @return Carbon
+     */
+    public function createdAt();
     
     /**
      * Send the email confirmation notification.

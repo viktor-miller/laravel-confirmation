@@ -25,7 +25,7 @@ class Verified implements Rule
      */
     public function __construct($pause = null)
     {
-        $this->pause = $pause;
+        $this->pause = $pause? : config('basic-auth.pause');
     }
     
     /**
@@ -42,7 +42,7 @@ class Verified implements Rule
         ]);
         
         if ($user instanceof Confirmable && ! $user->isConfirmed()) {
-            if ($this->pause && $created = $user->getAttribute('created_at')) {
+            if ($created = $user->getAttribute('created_at')) {
                 return Carbon::now()->diffInHours($created) < $this->pause;
             }
             

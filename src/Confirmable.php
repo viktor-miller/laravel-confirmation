@@ -26,9 +26,19 @@ trait Confirmable
      * 
      * @return type
      */
-    public function getConfirmationEmail()
+    public function confirmationEmail()
     {
         return $this->email;
+    }
+    
+    /**
+     * Gte created at
+     * 
+     * @return \Carbon\Carbon
+     */
+    public function createdAt()
+    {
+        return $this->created_at;
     }
     
     /**
