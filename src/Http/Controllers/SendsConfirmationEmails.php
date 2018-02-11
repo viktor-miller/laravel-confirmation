@@ -64,7 +64,7 @@ trait SendsConfirmationEmails
     {
         return redirect()->route('confirmation.manual', [
             'email' => $request->input('email')
-        ])->with('success', trans($response));
+        ])->with('info', trans($response));
     }
     
     /**
