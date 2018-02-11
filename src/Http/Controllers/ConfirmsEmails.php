@@ -105,6 +105,7 @@ trait ConfirmsEmails
     {
         return redirect()
                 ->route('confirmation.manual')
+                ->withInput()
                 ->with('error', trans($response));
     }
     

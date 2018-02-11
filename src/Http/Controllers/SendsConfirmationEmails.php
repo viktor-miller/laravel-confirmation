@@ -75,7 +75,7 @@ trait SendsConfirmationEmails
      */
     protected function notSendedResponse($response)
     {
-        return back()->with('error', trans($response));
+        return back()->withInput()->with('error', trans($response));
     }
     
     /**
