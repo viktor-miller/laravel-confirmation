@@ -49,6 +49,6 @@ trait Confirmable
      */
     public function sendConfirmationNotification($token)
     {
-        $this->notify(new Confirmation($this->getConfirmationEmail(), $token));
+        $this->notify(new Confirmation($this->confirmationEmail(), $token));
     }
 }

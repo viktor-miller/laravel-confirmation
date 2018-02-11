@@ -18,6 +18,5 @@ return [
             'expire' => 60
         ]
     ],
-    'pause' => 24
 ];
 

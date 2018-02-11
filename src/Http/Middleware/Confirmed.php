@@ -2,8 +2,8 @@
 
 namespace ViktorMiller\LaravelConfirmation\Http\Middleware;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use ViktorMiller\LaravelConfirmation\Facades\Confirmation;
 use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
 
 /**
@@ -13,6 +13,11 @@ use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
 class Confirmed 
 {   
     /**
+     * @var Confirmable
+     */
+    protected $user;
+    
+    /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -20,51 +25,38 @@ class Confirmed
      * @return mixed
      */
     public function handle($request, $next)
-    {
-        if ($this->autnenticated() && $this->isNotConfirmed()) {
+    {   
+        if ($this->user() && ! $this->user()->isConfirmed()) {
             $this->guard()->logout();
 
-            return $request->ajax()
-                    ? response('Unauthenticated', 401)
-                    : redirect()->refresh();
+            if ($request->ajax()) {
+                return response('Unauthenticated', 401);
+            }
+            
+            return redirect()
+                    ->route('confirmation.manual', [
+                        'email' => $this->user()->confirmationEmail()
+                    ])
+                    ->with('error', trans('confirmation::alert.unconfirmed'));
         }
         
         return $next($request);
     }
     
     /**
-     * Determine if user is not confirmed
-     * 
-     * @return bool
-     */
-    protected function isNotConfirmed()
-    {
-        $user = $this->user();
-        $pause = config('confirmation.pause', 0);
-
-        return $user instanceof Confirmable && 
-             ! $user->isConfirmed() && 
-               Carbon::now()->diffInHours($user->createdAt()) >= $pause;
-    }
-    
-    /**
-     * Determine is user authenticated
-     * 
-     * @return bool
-     */
-    protected function autnenticated()
-    {
-        return $this->guard()->check();
-    }
-    
-    /**
-     * Get authenticated user instance
+     * Get authenticate user
      * 
      * @return \Illuminate\Contracts\Auth\Authenticable
      */
     protected function user()
     {
-        return Auth::user();
+        if (! $this->user) {
+            if ($this->guard()->user() instanceof Confirmable) {
+                $this->user = $this->guard()->user();
+            }
+        }
+        
+        return $this->user;
     }
     
     /**
@@ -75,5 +67,15 @@ class Confirmed
     protected function guard()
     {
         return Auth::guard();
+    }
+    
+    /**
+     * Get confirmation broker
+     * 
+     * @return \ViktorMiller\LaravelConfirmation\Contracts\Broker
+     */
+    protected function broker()
+    {
+        return Confirmation::broker();
     }
 }

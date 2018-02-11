@@ -127,13 +127,23 @@ class DatabaseTokenRepository implements TokenRepository
      */
     public function exists(Confirmable $user, $token)
     {
-        $record = (array) $this->getTable()->where(
-            'email', $user->confirmationEmail()
-        )->first();
+        $record = $this->last($user);
 
         return $record &&
-               ! $this->tokenExpired($record['created_at']) &&
-                 $this->hasher->check($token, $record['token']);
+               ! $this->tokenExpired($record->created_at) &&
+                 $this->hasher->check($token, $record->token);
+    }
+    
+    /**
+     * 
+     * @param  Confirmable $user
+     * @return array
+     */
+    public function last(Confirmable $user)
+    {   
+        return $this->getTable()->where(
+            'email', $user->confirmationEmail()
+        )->first();
     }
 
     /**

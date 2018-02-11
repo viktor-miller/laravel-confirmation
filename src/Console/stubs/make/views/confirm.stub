@@ -5,16 +5,6 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
 
-            @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-            @elseif(session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-            @endif
-
             <div class="panel panel-default">
                 <div class="panel-heading">Email confirm</div>
 
@@ -56,6 +46,12 @@
                                 <button type="submit" class="btn btn-primary">
                                     Send
                                 </button>
+
+                                <a class="btn btn-link" href="{{ route('confirmation', [
+                                     'email' => $email
+                                 ]) }}">
+                                    Send link again
+                                </a>
                             </div>
                         </div>
                     </form>
