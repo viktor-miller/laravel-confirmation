@@ -20,7 +20,7 @@ class Confirmed
      */
     public function handle($request, $next)
     {
-        if (! $this->isNotConfirmed()) {
+        if ($this->autnenticated() && ! $this->isNotConfirmed()) {
             $this->guard()->logout();
             
             return $request->ajax()
@@ -44,6 +44,16 @@ class Confirmed
         return $user instanceof Confirmable && 
              ! $user->isConfirmed() && 
                Carbon::now()->diffInHours($user->createdAt()) >= $pause;
+    }
+    
+    /**
+     * Determine is user authenticated
+     * 
+     * @return bool
+     */
+    protected function autnenticated()
+    {
+        return $this->guard()->check();
     }
     
     /**
