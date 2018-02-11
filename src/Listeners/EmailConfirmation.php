@@ -2,7 +2,6 @@
 
 namespace ViktorMiller\LaravelConfirmation\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use ViktorMiller\LaravelConfirmation\Contracts\Broker;
 use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
 
@@ -11,7 +10,7 @@ use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
  * @package  laravel-confirmation
  * @author   Viktor Miller <phpfriq@gmail.com>
  */
-class EmailConfirmation implements ShouldQueue
+class EmailConfirmation
 {
     /**
      * @var Broker 
