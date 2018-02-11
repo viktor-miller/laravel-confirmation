@@ -4,6 +4,7 @@ namespace ViktorMiller\LaravelConfirmation\Http\Middleware;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
 
 /**
  *
@@ -20,9 +21,9 @@ class Confirmed
      */
     public function handle($request, $next)
     {
-        if ($this->autnenticated() && ! $this->isNotConfirmed()) {
+        if ($this->autnenticated() && $this->isNotConfirmed()) {
             $this->guard()->logout();
-            
+
             return $request->ajax()
                     ? response('Unauthenticated', 401)
                     : redirect()->refresh();
@@ -40,7 +41,7 @@ class Confirmed
     {
         $user = $this->user();
         $pause = config('confirmation.pause', 0);
-        
+
         return $user instanceof Confirmable && 
              ! $user->isConfirmed() && 
                Carbon::now()->diffInHours($user->createdAt()) >= $pause;
