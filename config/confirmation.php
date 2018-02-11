@@ -17,6 +17,7 @@ return [
             'table' => 'email_confirmations',
             'expire' => 60
         ]
-    ]
+    ],
+    'pause' => 24
 ];
 
