@@ -16,28 +16,28 @@ interface Broker
      *
      * @var string
      */
-    const CONFIRM_LINK_SENT = 'confirmation.sent';
+    const CONFIRM_LINK_SENT = 'confirmation::alert.sent';
 
     /**
      * Constant representing a successfully confirm email.
      *
      * @var string
      */
-    const EMAIL_CONFIRMED = 'confirmation.confirmed';
+    const EMAIL_CONFIRMED = 'confirmation::alert.confirmed';
 
     /**
      * Constant representing the user not found response.
      *
      * @var string
      */
-    const INVALID_USER = 'confirmation.user';
+    const INVALID_USER = 'confirmation::alert.user';
 
     /**
      * Constant representing an invalid token.
      *
      * @var string
      */
-    const INVALID_TOKEN = 'confirmation.token';
+    const INVALID_TOKEN = 'confirmation::alert.token';
 
     /**
      * Send a confirm link to a user.
