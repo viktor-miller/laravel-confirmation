@@ -21,7 +21,6 @@ This package is intended to confirm the email address of the user. **Tested and 
 	
 2. For Laravel 5.4 add service provider and aliase to **config/app.php**
 
-<<<<<<< HEAD
 ```php
     'providers' => [
         ViktorMiller\LaravelConfirmation\ServiceProvider::class,
@@ -30,16 +29,6 @@ This package is intended to confirm the email address of the user. **Tested and 
         'Confirmation' => ViktorMiller\LaravelConfirmation\Facades\Confirmation::class
     ]
 ```
-=======
-    ```php
-        'providers' => [
-            ViktorMiller\LaravelConfirmation\ServiceProvider::class,
-        ],
-        'aliases' => [
-            'Confirmation' => ViktorMiller\LaravelConfirmation\Facades\Confirmation::class
-        ]
-    ```
->>>>>>> 431f4363a3985a2e533433fa253d9b14821e74df
 
 3. Add a **Confirmable** trait and implement **Confirmable** interface on your User model
 
