@@ -29,7 +29,7 @@
                 "ViktorMiller\\LaravelConfirmation\\ServiceProvider"
             ],
             "aliases": {
-                "Email": "ViktorMiller\\LaravelConfirmation\\Facade\\Confirmation"
+                "Confirmation": "ViktorMiller\\LaravelConfirmation\\Facade\\Confirmation"
             }
         }
     }
