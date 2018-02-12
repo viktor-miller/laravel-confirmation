@@ -28,7 +28,7 @@ class Email
         ]);
         
         if ($user instanceof Confirmable && ! $user->isConfirmed()) {
-            $pause = array_get($parameters, config('confirmation.pause', 0));
+            $pause = array_get($parameters, 0, config('confirmation.pause', 0));
             
             return Carbon::now()->diffInHours($user->createdAt()) < $pause;
         }
