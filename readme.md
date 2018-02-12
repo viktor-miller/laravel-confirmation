@@ -21,12 +21,14 @@ This package is intended to confirm the email address of the user. **Tested and 
 	
 2. For Laravel 5.4 add service provider and aliase to **config/app.php**
 
-        'providers' => [
-            ViktorMiller\LaravelConfirmation\ServiceProvider::class,
-        ],
-        'aliases' => [
-            'Confirmation' => ViktorMiller\LaravelConfirmation\Facades\Confirmation::class
-        ]
+```php
+    'providers' => [
+        ViktorMiller\LaravelConfirmation\ServiceProvider::class,
+    ],
+    'aliases' => [
+        'Confirmation' => ViktorMiller\LaravelConfirmation\Facades\Confirmation::class
+    ]
+```
 
 3. Add a **Confirmable** trait and implement **Confirmable** interface on your User model
 
@@ -109,8 +111,8 @@ This package is intended to confirm the email address of the user. **Tested and 
             protected function validateLogin(Request $request)
             {
                 $this->validate($request, [
-            $this->username() => ['required', 'string', new Verified],
-            'password' => 'required|string',
+                    $this->username() => ['required', 'string', new Verified],
+                    'password' => 'required|string',
                 ]);
             }
 	    
