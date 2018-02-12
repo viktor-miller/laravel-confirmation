@@ -1,6 +1,6 @@
 <?php
 
-namespace ViktorMiller\LaravelConfirmation\Http\Controllers;
+namespace ViktorMiller\LaravelConfirmation\Auth\Emails;
 
 use Illuminate\Http\Request;
 use ViktorMiller\LaravelConfirmation\Contracts\Broker;

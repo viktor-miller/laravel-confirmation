@@ -38,8 +38,8 @@ This package is intended to confirm the email address of the user. **Tested and 
 namespace App\User;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use ViktorMiller\LaravelConfirmation\Confirmable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use ViktorMiller\LaravelConfirmation\Contracts\Confirmable as ConfirmableContract;
 
 class User extends Authenticatable implements Confirmable

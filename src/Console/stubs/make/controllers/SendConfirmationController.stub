@@ -3,7 +3,7 @@
 namespace {{namespace}}Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use ViktorMiller\LaravelConfirmation\Http\Controllers\SendsConfirmationEmails;
+use ViktorMiller\LaravelConfirmation\Auth\Emails\SendsConfirmationEmails;
 
 /**
  * 
