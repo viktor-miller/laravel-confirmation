@@ -32,18 +32,20 @@ This package is intended to confirm the email address of the user. **Tested and 
 
 3. Add a **Confirmable** trait and implement **Confirmable** interface on your User model
 
-        <?php
+```php
+<?php
 
-        namespace App\User;
+namespace App\User;
 
-        use Illuminate\Notifications\Notifiable;
-        use Illuminate\Foundation\Auth\User as Authenticatable;
-        use ViktorMiller\LaravelConfirmation\Confirmable;
-        use ViktorMiller\LaravelConfirmation\Contracts\Confirmable as ConfirmableContract;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use ViktorMiller\LaravelConfirmation\Confirmable;
+use ViktorMiller\LaravelConfirmation\Contracts\Confirmable as ConfirmableContract;
 
-        class User extends Authenticatable implements Confirmable
-        {
-            use Notifiable, Confirmable;
+class User extends Authenticatable implements Confirmable
+{
+    use Notifiable, Confirmable;
+```
 
 4. Add validation rule in LoginController and ForgotPasswordController to restrict users with an unconfirmed email address.
 
@@ -51,115 +53,123 @@ This package is intended to confirm the email address of the user. **Tested and 
 
     LoginController
 
-        <?php
+```php
+<?php
 
-        namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-        class LoginController extends Controller
-        {
-            /**
-             * Validate the user login request.
-             *
-             * @param  \Illuminate\Http\Request  $request
-             * @return void
-             */
-            protected function validateLogin(Request $request)
-            {
-                $this->validate($request, [
-                    $this->username() => 'required|string|verified',
-                    'password' => 'required|string',
-                ]);
-            }
+class LoginController extends Controller
+{
+    /**
+     * Validate the user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateLogin(Request $request)
+    {
+        $this->validate($request, [
+            $this->username() => 'required|string|verified',
+            'password' => 'required|string',
+        ]);
+    }
+```
 
-    and ForgotPasswordController
+and ForgotPasswordController
+```php
+<?php
 
-        <?php
+namespace App\Http\Controllers\Auth;
 
-        namespace App\Http\Controllers\Auth;
-
-        class ForgotPasswordController extends Controller
-        { 
-            /**
-             * Validate the email for the given request.
-             *
-             * @param  \Illuminate\Http\Request  $request
-             * @return void
-             */
-            protected function validateEmail(Request $request)
-            {
-                $this->validate($request, ['email' => 'required|email|verified']);
-            }
+class ForgotPasswordController extends Controller
+{ 
+    /**
+     * Validate the email for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateEmail(Request $request)
+    {
+        $this->validate($request, ['email' => 'required|email|verified']);
+    }
+```
 	    
-    For Laravel 5.5:
+For Laravel 5.5:
 	
-    LoginController
+LoginController
 
-        <?php
+```php
+<?php
 
-        namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-        use ViktorMiller\LaravelConfirmation\Rules\Verified;
+use ViktorMiller\LaravelConfirmation\Rules\Verified;
 
-        class LoginController extends Controller
-        {
-            /**
-             * Validate the user login request.
-             *
-             * @param  \Illuminate\Http\Request  $request
-             * @return void
-             */
-            protected function validateLogin(Request $request)
-            {
-                $this->validate($request, [
-                    $this->username() => ['required', 'string', new Verified],
-                    'password' => 'required|string',
-                ]);
-            }
+class LoginController extends Controller
+{
+    /**
+     * Validate the user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateLogin(Request $request)
+    {
+        $this->validate($request, [
+            $this->username() => ['required', 'string', new Verified],
+            'password' => 'required|string',
+        ]);
+    }
+```
 	    
-    and ForgotPasswordController
-	
-        <?php
+and ForgotPasswordController
+```php
+<?php
 
-        namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-        use ViktorMiller\LaravelConfirmation\Rules\Verified;
+use ViktorMiller\LaravelConfirmation\Rules\Verified;
 
-        class ForgotPasswordController extends Controller
-        { 
-            /**
-             * Validate the email for the given request.
-             *
-             * @param  \Illuminate\Http\Request  $request
-             * @return void
-             */
-            protected function validateEmail(Request $request)
-            {
-                $this->validate($request, [
-                    'email' => ['required', 'email', new Verified]
-                ]);
-            }
+class ForgotPasswordController extends Controller
+{ 
+    /**
+     * Validate the email for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateEmail(Request $request)
+    {
+        $this->validate($request, [
+            'email' => ['required', 'email', new Verified]
+        ]);
+    }
+```
 
 5. Add event listener to **Illuminate\Auth\Events\Registered**
-	
-        <?php
 
-        namespace App\Providers;
+```php
+<?php
 
-        use Illuminate\Support\Facades\Event;
-        use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+namespace App\Providers;
 
-        class EventServiceProvider extends ServiceProvider
-        {
-            /**
-             * The event listener mappings for the application.
-             *
-             * @var array
-             */
-            protected $listen = [
-                'Illuminate\Auth\Events\Registered' => [
-                    'ViktorMiller\LaravelConfirmation\Listeners\EmailConfirmation'
-                ]
-            ];
+use Illuminate\Support\Facades\Event;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+
+class EventServiceProvider extends ServiceProvider
+{
+    /**
+     * The event listener mappings for the application.
+     *
+     * @var array
+     */
+    protected $listen = [
+        'Illuminate\Auth\Events\Registered' => [
+            'ViktorMiller\LaravelConfirmation\Listeners\EmailConfirmation'
+        ]
+    ];
+``` 
 
 6. Run migrations
     
@@ -189,16 +199,20 @@ supported options
 If you want to allow users to ignore the verification rule "verified" for a certain number of hours (for example 24h):
 
 for Laravel >= 5.4
-    
-    $this->validate($request, [
-        'email' => 'required|email|verified:24'
-    ]);
-    
+
+```php
+$this->validate($request, [
+    'email' => 'required|email|verified:24'
+]);
+``` 
+
 for Laravel >= 5.5
-	
-    use ViktorMiller\LaravelConfirmation\Rules\Verified;
-	
-    $this->validate($request, [
-            'email' => ['required', 'string', new Verified(24)
-        ],
-    ]);
+
+```php	
+use ViktorMiller\LaravelConfirmation\Rules\Verified;
+
+$this->validate($request, [
+        'email' => ['required', 'string', new Verified(24)
+    ],
+]);
+```
