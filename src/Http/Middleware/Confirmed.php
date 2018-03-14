@@ -7,8 +7,9 @@ use ViktorMiller\LaravelConfirmation\Facades\Confirmation;
 use ViktorMiller\LaravelConfirmation\Contracts\Confirmable;
 
 /**
- *
- * @author Viktor Miller <v.miller@forty-four.de>
+ * 
+ * @package  laravel-confirmation
+ * @author   Viktor Miller <phpfriq@gmail.com>
  */
 class Confirmed 
 {   
